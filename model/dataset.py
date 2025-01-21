@@ -1,6 +1,6 @@
 import kagglehub
 
 # Download latest version
-path = kagglehub.dataset_download("kailaspsudheer/sarscope-unveiling-the-maritime-landscape")
+path = kagglehub.dataset_download("aaryamenon/sar-image-colorization")
 
 print("Path to dataset files:", path)
