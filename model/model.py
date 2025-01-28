@@ -7,6 +7,7 @@ from tensorflow.keras.layers import Input, Conv2D, UpSampling2D, BatchNormalizat
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import ModelCheckpoint
 import matplotlib.pyplot as plt
+from keras import callbacks
 
 # 1. Create a data generator
 # def data_generator(bw_folder, color_folder, image_size=(128, 128), batch_size=32):
@@ -93,11 +94,12 @@ color_folder = os.path.join('data', 'opt')
 # batch_size = 32
 batch_size = 16
 steps_per_epoch = len(os.listdir(bw_folder)) // batch_size
-# epochs = 50
-epochs = 1
+epochs = 50
 
 # Save checkpoints during training
 checkpoint = ModelCheckpoint("colorization_model.keras", save_best_only=True, monitor="val_loss", mode="min")
+
+early_stopping = callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1, mode='auto')
 
 train_gen = data_generator(bw_folder, color_folder, batch_size=batch_size)
 val_gen = data_generator(bw_folder, color_folder, batch_size=batch_size)
@@ -108,7 +110,7 @@ history = model.fit(
     steps_per_epoch=steps_per_epoch,
     validation_steps=steps_per_epoch // 10,
     epochs=epochs,
-    callbacks=[checkpoint]
+    callbacks=[early_stopping, checkpoint]
 )
 
 # 4. Visualize predictions
