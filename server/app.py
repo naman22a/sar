@@ -1,66 +1,53 @@
-from flask import Flask, request, send_file
+import os
+from flask import Flask, request, jsonify, send_file
+import uuid
+import cv2
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import load_model
-from PIL import Image
-import io
 
-# Initialize Flask app
 app = Flask(__name__)
+model = tf.keras.models.load_model('sar.keras')
 
-# Load the trained model
-model = load_model("colorized.keras")
+SIZE = 256
+UPLOAD_FOLDER = "uploads"
+OUTPUT_FOLDER = "outputs"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-# Define the image size (should match the model input size)
-image_size = (128, 128)  # Replace with your model's input size
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 
-
-def preprocess_image(image):
-    """Preprocess the input grayscale image."""
-    image = image.resize(image_size).convert("L")  # Resize and convert to grayscale
-    image = np.array(image).astype("float32") / 255.0  # Normalize to [0, 1]
-    image = np.expand_dims(image, axis=-1)  # Add channel dimension (H, W, 1)
-    image = np.expand_dims(image, axis=0)  # Add batch dimension (1, H, W, 1)
-    return image
-
-
-def postprocess_image(image):
-    """Convert the model's RGB output to a displayable format."""
-    image = np.squeeze(image, axis=0)  # Remove batch dimension
-    image = (image * 255).astype("uint8")  # Convert to [0, 255]
-    return Image.fromarray(image)  # Convert to PIL Image
-
-
-@app.route("/colorize", methods=["POST"])
+@app.route('/colorize', methods=['POST'])
 def colorize():
-    """API endpoint to colorize a grayscale image."""
-    if "image" not in request.files:
-        return "No image file provided", 400
+    # Validation
+    if 'image' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    image = request.files['image']
+    if image.filename == '':
+        return jsonify({"error": "No selected file"}), 400
 
-    # Get the uploaded image
-    file = request.files["image"]
-    try:
-        # Open and preprocess the image
-        image = Image.open(file)
-        input_data = preprocess_image(image)
+    # Save original image
+    image_path = os.path.join(app.config["UPLOAD_FOLDER"], str(uuid.uuid4()) + '-' + image.filename)
+    image.save(image_path)
 
-        # Predict the colorized image
-        output_data = model.predict(input_data)
+    # Preprocessing: Read and resize the image
+    img = cv2.imread(image_path).astype('float32')
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # Ensure RGB format
+    img = cv2.resize(img, (SIZE, SIZE))  # Resize to model's expected size
+    img = img / 255.0  # Normalize pixel values
+    img = np.expand_dims(img, axis=0)  # Add batch dimension
 
-        # Postprocess the output to convert it to RGB image
-        output_image = postprocess_image(output_data)
+    # Prediction
+    prediction = model.predict(img)
 
-        # Save image to a bytes buffer
-        img_io = io.BytesIO()
-        output_image.save(img_io, format="PNG")
-        img_io.seek(0)
+    # Post-processing: Convert back to an image format
+    output_img = (prediction[0] * 255).astype("uint8")
 
-        return send_file(img_io, mimetype="image/png")
+    # Save processed image
+    output_filename = os.path.join(app.config["OUTPUT_FOLDER"], "colorized_" + image.filename)
+    cv2.imwrite(output_filename, cv2.cvtColor(output_img, cv2.COLOR_RGB2BGR))
 
-    except Exception as e:
-        return str(e), 500
+    return send_file(output_filename, mimetype='image/png')
 
-
-# Run the Flask app
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
