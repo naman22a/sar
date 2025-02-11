@@ -5,6 +5,8 @@ import axios from 'axios';
 const App: React.FC = () => {
     const [preview, setPreview] = useState('');
     const [result, setResult] = useState('');
+    const [type, setType] = useState('');
+    const [confidence, setConfidence] = useState('');
 
     const onDrop = useCallback(async (acceptedFiles: any[]) => {
         try {
@@ -22,6 +24,20 @@ const App: React.FC = () => {
                     responseType: 'blob'
                 }
             );
+
+            const formData2 = new FormData();
+            formData2.append('image', res.data);
+            const res2 = await axios.post(
+                'http://127.0.0.1:5000/classify',
+                formData2,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+            setType(res2.data.class);
+            setConfidence(res2.data.confidence);
             setResult(URL.createObjectURL(res.data));
         } catch (error) {
             alert('Something went wrong');
@@ -72,6 +88,8 @@ const App: React.FC = () => {
                     />
                 )}
             </main>
+            {type && <p>Type: {type}</p>}
+            {confidence && <p>Confidence: {confidence}</p>}
         </div>
     );
 };
