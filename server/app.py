@@ -5,9 +5,14 @@ import uuid
 import cv2
 import numpy as np
 import tensorflow as tf
+from PIL import Image
+from tensorflow.keras.preprocessing import image
+
+CLASS_NAMES = ['agri', 'barrenland', 'grassland', 'urban']
 
 app = Flask(__name__)
 model = tf.keras.models.load_model('sar.keras')
+classify_model = tf.keras.models.load_model('classification.keras')
 
 CORS(app, origins=['http://localhost:3000'])
 
@@ -51,6 +56,31 @@ def colorize():
     cv2.imwrite(output_filename, cv2.cvtColor(output_img, cv2.COLOR_RGB2BGR))
 
     return send_file(output_filename, mimetype='image/png')
+
+@app.route('/classify', methods=['POST'])
+def classify():
+    # validation
+    if 'image' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    image = request.files['image']
+    if image.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    
+    # preprocess image
+    img = Image.open(image)
+    img = img.resize((256, 256))
+    img = img.convert("RGB")
+    img_array = image.img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)
+    img_array = img_array / 255.0
+
+    # prediction
+    predictions = classify_model.predict(img_array)
+    predicted_class = CLASS_NAMES[np.argmax(predictions)]
+    confidence = float(np.max(predictions))
+
+    return jsonify({"class": predicted_class, "confidence": confidence})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
