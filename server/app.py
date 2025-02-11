@@ -57,6 +57,14 @@ def colorize():
 
     return send_file(output_filename, mimetype='image/png')
 
+def preprocess_image(img):
+    img = img.resize((256, 256))
+    img = img.convert("RGB")
+    img_array = image.img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)
+    img_array = img_array / 255.0
+    return img_array
+
 @app.route('/classify', methods=['POST'])
 def classify():
     # validation
@@ -68,11 +76,7 @@ def classify():
     
     # preprocess image
     img = Image.open(image)
-    img = img.resize((256, 256))
-    img = img.convert("RGB")
-    img_array = image.img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0)
-    img_array = img_array / 255.0
+    img_array = preprocess_image(img)
 
     # prediction
     predictions = classify_model.predict(img_array)
