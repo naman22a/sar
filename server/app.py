@@ -1,5 +1,6 @@
 import os
 from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
 import uuid
 import cv2
 import numpy as np
@@ -7,6 +8,8 @@ import tensorflow as tf
 
 app = Flask(__name__)
 model = tf.keras.models.load_model('sar.keras')
+
+CORS(app, origins=['http://localhost:3000'])
 
 SIZE = 256
 UPLOAD_FOLDER = "uploads"
