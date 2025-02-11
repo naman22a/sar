@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 from PIL import Image
-from tensorflow.keras.preprocessing import image
+from tensorflow.keras.preprocessing import image # type: ignore
 
 CLASS_NAMES = ['agri', 'barrenland', 'grassland', 'urban']
 
