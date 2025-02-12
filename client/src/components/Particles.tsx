@@ -24,19 +24,12 @@ const MyParticles = () => {
                 fpsLimit: 120,
                 interactivity: {
                     events: {
-                        onClick: {
-                            enable: true,
-                            mode: 'push'
-                        },
                         onHover: {
                             enable: true,
                             mode: 'repulse'
                         }
                     },
                     modes: {
-                        push: {
-                            quantity: 4
-                        },
                         repulse: {
                             distance: 200,
                             duration: 0.4
@@ -68,7 +61,7 @@ const MyParticles = () => {
                         density: {
                             enable: true
                         },
-                        value: 80
+                        value: 180
                     },
                     opacity: {
                         value: 0.5

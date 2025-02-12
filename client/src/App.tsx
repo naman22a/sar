@@ -109,7 +109,7 @@ const App: React.FC = () => {
                 )}
                 {result && (
                     <button
-                        className="bg-teal-400 text-white rounded-full px-8 py-2 mt-5 font-semibold cursor-pointer"
+                        className="bg-teal-600 hover:bg-teal-700 transition text-white rounded-full px-8 py-2 mt-5 font-semibold cursor-pointer"
                         onClick={() => {
                             setPreview('');
                             setResult('');
