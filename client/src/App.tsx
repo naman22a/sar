@@ -52,7 +52,7 @@ const App: React.FC = () => {
     return (
         <div className="flex min-h-screen flex-col justify-center items-center">
             <MyParticles />
-            <div className="flex flex-col justify-center items-center shadow-2xl p-10 z-50 bg-black text-white">
+            <div className="flex flex-col justify-center items-center shadow-2xl p-10 z-50 bg-neutral-900 text-white rounded-xl">
                 <h1 className="text-4xl font-bold mb-5">
                     📡 SAR Image Enhancement and Terrain Classification Methods
                 </h1>
