@@ -8,7 +8,6 @@ import tensorflow as tf
 from PIL import Image
 from tensorflow.keras.preprocessing import image # type: ignore
 
-
 app = Flask(__name__)
 model = tf.keras.models.load_model('sar.keras')
 classify_model = tf.keras.models.load_model('classification.keras')
