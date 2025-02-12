@@ -8,7 +8,7 @@ import tensorflow as tf
 from PIL import Image
 from tensorflow.keras.preprocessing import image # type: ignore
 
-CLASS_NAMES = ['agri', 'barrenland', 'grassland', 'urban']
+CLASS_NAMES = ['agriculture', 'barrenland', 'grassland', 'urban']
 
 app = Flask(__name__)
 model = tf.keras.models.load_model('sar.keras')

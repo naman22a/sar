@@ -89,7 +89,21 @@ const App: React.FC = () => {
                 )}
             </main>
             {type && <p>Type: {type}</p>}
-            {confidence && <p>Confidence: {confidence}</p>}
+            {confidence && (
+                <p>Confidence: {(parseFloat(confidence) * 100).toFixed(2)} %</p>
+            )}
+            {result && (
+                <button
+                    onClick={() => {
+                        setPreview('');
+                        setResult('');
+                        setType('');
+                        setConfidence('');
+                    }}
+                >
+                    Upload Again
+                </button>
+            )}
         </div>
     );
 };
