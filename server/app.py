@@ -8,7 +8,6 @@ import tensorflow as tf
 from PIL import Image
 from tensorflow.keras.preprocessing import image # type: ignore
 
-CLASS_NAMES = ['agriculture', 'barrenland', 'grassland', 'urban']
 
 app = Flask(__name__)
 model = tf.keras.models.load_model('sar.keras')
@@ -17,6 +16,8 @@ classify_model = tf.keras.models.load_model('classification.keras')
 CORS(app, origins=['http://localhost:3000'])
 
 SIZE = 256
+CLASS_NAMES = ['agriculture', 'barrenland', 'grassland', 'urban']
+
 UPLOAD_FOLDER = "uploads"
 OUTPUT_FOLDER = "outputs"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
