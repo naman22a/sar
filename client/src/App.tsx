@@ -3,6 +3,8 @@ import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import MyParticles from './components/Particles';
 
+const BASE_URL = import.meta.env.VITE_API_ENDPOINT;
+
 const App: React.FC = () => {
     const [preview, setPreview] = useState('');
     const [result, setResult] = useState('');
@@ -15,28 +17,20 @@ const App: React.FC = () => {
             setPreview(URL.createObjectURL(file));
             const formData = new FormData();
             formData.append('image', file);
-            const res = await axios.post(
-                'http://127.0.0.1:5000/colorize',
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                    responseType: 'blob'
-                }
-            );
+            const res = await axios.post(`${BASE_URL}/colorize`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                responseType: 'blob'
+            });
 
             const formData2 = new FormData();
             formData2.append('image', res.data);
-            const res2 = await axios.post(
-                'http://127.0.0.1:5000/classify',
-                formData2,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+            const res2 = await axios.post(`${BASE_URL}/classify`, formData2, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
                 }
-            );
+            });
             setType(res2.data.class);
             setConfidence(res2.data.confidence);
             setResult(URL.createObjectURL(res.data));
