@@ -55,8 +55,12 @@ data
 │       ├───barrenland
 │       ├───grassland
 │       └───urban
-├───opt
-└───sar
+├───test
+│   └───opt
+│   └───sar
+└───train
+    └───opt
+    └───sar
 ```
 
 Create and activate the virtualenv inside model folder
