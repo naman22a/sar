@@ -87,21 +87,20 @@ const App: React.FC = () => {
                         />
                     )}
                 </main>
-                {/*
-                    {type && (
-                        <p className="text-lg">
+                {type && (
+                    <p className="text-lg">
                         Type: <span className="font-semibold">{type}</span>
-                        </p>
+                    </p>
                 )}
                 {confidence && (
                     <p className="text-lg">
-                    {' '}
-                    Confidence:{' '}
+                        {' '}
+                        Confidence:{' '}
                         <span className="font-semibold">
                             {(parseFloat(confidence) * 100).toFixed(2)} %
                         </span>
                     </p>
-                )} */}
+                )}
                 {result && (
                     <button
                         className="bg-teal-600 hover:bg-teal-700 transition text-white rounded-full px-8 py-2 mt-5 font-semibold cursor-pointer"
