@@ -74,10 +74,10 @@ pip install -r requirements.txt
 
 We have 2 models in model folder, train them from there respective files
 
--   gan.ipynb
--   classification.ipynb
+-   src/GAN-colorization.ipynb
+-   src/classification.ipynb
 
-Copy `sar.keras` and `classification.keras` from model folder to server folder
+Copy `models/GAN-colorization.keras` and `models/classification.keras` from model folder to server/models folder
 
 ### 2. Setup the Server
 
