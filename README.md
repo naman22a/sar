@@ -77,7 +77,7 @@ We have 2 models in model folder, train them from there respective files
 -   src/GAN-colorization.ipynb
 -   src/classification.ipynb
 
-Copy `models/GAN-colorization.keras` and `models/classification.keras` from model folder to server/models folder
+Copy `models/GAN-colorization.keras` and `models/classification.keras` from `model` folder to `server/models` folder
 
 ### 2. Setup the Server
 
