@@ -97,7 +97,7 @@ const App: React.FC = () => {
                         {' '}
                         Confidence:{' '}
                         <span className="font-semibold">
-                            {(parseFloat(confidence) * 100).toFixed(2)} %
+                            {parseFloat(confidence).toFixed(2)} %
                         </span>
                     </p>
                 )}
