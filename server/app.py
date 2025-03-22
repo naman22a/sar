@@ -9,6 +9,7 @@ from PIL import Image
 from tensorflow.keras.preprocessing import image # type: ignore
 import os
 from dotenv import load_dotenv
+import imghdr 
 
 # load env variables
 load_dotenv()
@@ -31,6 +32,10 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 
+def is_image(file):
+    file_type = imghdr.what(file)
+    return file_type in ['jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp']
+
 @app.route('/colorize', methods=['POST'])
 def colorize():
     # validation
@@ -39,6 +44,8 @@ def colorize():
     image = request.files['image']
     if image.filename == '':
         return jsonify({"error": "No selected file"}), 400
+    if not is_image(image):
+        return jsonify({"error": "Invalid file type. Only image files are allowed."}), 400
 
     # save image to disk
     image_path = os.path.join(app.config["UPLOAD_FOLDER"], str(uuid.uuid4()) + '-' + image.filename)
@@ -79,6 +86,8 @@ def classify():
     image = request.files['image']
     if image.filename == '':
         return jsonify({"error": "No selected file"}), 400
+    if not is_image(image):
+        return jsonify({"error": "Invalid file type. Only image files are allowed."}), 400
     
     # preprocess image
     img = Image.open(image)
@@ -94,3 +103,4 @@ def classify():
 
 if __name__ == '__main__':
     app.run(debug=True)
+# add validation for file to be only image

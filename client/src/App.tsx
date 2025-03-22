@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import MyParticles from './components/Particles';
+import toast from 'react-hot-toast';
 
 const BASE_URL = import.meta.env.VITE_API_ENDPOINT;
 
@@ -12,11 +13,14 @@ const App: React.FC = () => {
     const [confidence, setConfidence] = useState('');
 
     const onDrop = useCallback(async (acceptedFiles: any[]) => {
+        let toastId: string;
         try {
             const file = acceptedFiles[0];
-            setPreview(URL.createObjectURL(file));
             const formData = new FormData();
             formData.append('image', file);
+
+            toastId = toast.loading('Loading...');
+
             const res = await axios.post(`${BASE_URL}/colorize`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -31,12 +35,27 @@ const App: React.FC = () => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
+
+            toast.success('Success');
+
+            setPreview(URL.createObjectURL(file));
             setType(res2.data.class);
             setConfidence(res2.data.confidence);
             setResult(URL.createObjectURL(res.data));
         } catch (error) {
-            alert('Something went wrong');
-            console.error(error);
+            if ((error as AxiosError).response!.status === 400) {
+                toast.error('Invalid Image');
+                setType('');
+                setConfidence('');
+                setResult('');
+                setPreview('');
+            } else {
+                toast.error('Something went wrong');
+                console.error(error);
+            }
+        } finally {
+            // @ts-ignore
+            toast.dismiss(toastId);
         }
     }, []);
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
