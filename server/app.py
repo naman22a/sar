@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-model = tf.keras.models.load_model('models/GAN-colorization.keras')
+model = tf.keras.models.load_model('models/colorization-GAN-with-autoencoders.keras')
 classify_model = tf.keras.models.load_model('models/classification.keras')
 
 CORS_ORIGIN = os.environ.get('CORS_ORIGIN')
