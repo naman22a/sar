@@ -103,4 +103,3 @@ def classify():
 
 if __name__ == '__main__':
     app.run(debug=True)
-# add validation for file to be only image
