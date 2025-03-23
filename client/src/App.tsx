@@ -43,7 +43,7 @@ const App: React.FC = () => {
             setConfidence(res2.data.confidence);
             setResult(URL.createObjectURL(res.data));
         } catch (error) {
-            if ((error as AxiosError).response!.status === 400) {
+            if (axios.isAxiosError(error) && error.response) {
                 toast.error('Invalid Image');
                 setType('');
                 setConfidence('');
