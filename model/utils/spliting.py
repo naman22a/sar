@@ -1,30 +1,75 @@
 import os
 import shutil
+import random
 
-data_dir = "data"
-opt_dir = os.path.join(data_dir, "opt")
-sar_dir = os.path.join(data_dir, "sar")
-train_dir = os.path.join(data_dir, "train")
-test_dir = os.path.join(data_dir, "test")
 
-for split in ["train", "test"]:
-    os.makedirs(os.path.join(train_dir, "opt"), exist_ok=True)
-    os.makedirs(os.path.join(train_dir, "sar"), exist_ok=True)
-    os.makedirs(os.path.join(test_dir, "opt"), exist_ok=True)
-    os.makedirs(os.path.join(test_dir, "sar"), exist_ok=True)
+import os
 
-def split_images(source_dir, train_dest, test_dest, split_ratio=0.8):
-    images = sorted(os.listdir(source_dir)) 
+bw_folder = os.path.join('..', 'data', 'colorization', 'gray')
+color_folder = os.path.join('..', 'data', 'colorization', 'color')
+
+print("Checking paths...")
+print("bw_folder:", os.path.abspath(bw_folder), "Exists:", os.path.exists(bw_folder))
+print("color_folder:", os.path.abspath(color_folder), "Exists:", os.path.exists(color_folder))
+
+
+# Define paths (UPDATE THESE)
+bw_folder = os.path.join('..', 'data', 'colorization', 'gray')
+color_folder = os.path.join('..', 'data', 'colorization', 'color')
+output_dir = os.path.join('..', 'data', 'colorization', 'output')
+
+# Define split ratios
+train_ratio = 0.7
+val_ratio = 0.15
+test_ratio = 0.15
+
+# Ensure ratios sum to 1
+assert train_ratio + val_ratio + test_ratio == 1.0, "Ratios must sum to 1!"
+
+# Function to split images
+def split_and_copy_images(src_folder, dest_folder):
+    if not os.path.exists(src_folder):
+        print(f"❌ Error: Source folder '{src_folder}' does not exist!")
+        return
+
+    images = [f for f in os.listdir(src_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+
+    if not images:
+        print(f"⚠️ Warning: No images found in '{src_folder}'!")
+        return
+    
+    random.shuffle(images)
+
     total_images = len(images)
-    train_count = int(total_images * split_ratio)
+    train_split = int(total_images * train_ratio)
+    val_split = int(total_images * val_ratio)
 
-    for img in images[:train_count]:
-        shutil.move(os.path.join(source_dir, img), os.path.join(train_dest, img))
+    sets = {
+        "train": images[:train_split],
+        "val": images[train_split:train_split + val_split],
+        "test": images[train_split + val_split:]
+    }
 
-    for img in images[train_count:]:
-        shutil.move(os.path.join(source_dir, img), os.path.join(test_dest, img))
+    for set_name, file_list in sets.items():
+        set_path = os.path.join(dest_folder, set_name)
+        os.makedirs(set_path, exist_ok=True)
 
-split_images(opt_dir, os.path.join(train_dir, "opt"), os.path.join(test_dir, "opt"))
-split_images(sar_dir, os.path.join(train_dir, "sar"), os.path.join(test_dir, "sar"))
+        print(f"📂 Moving {len(file_list)} images to {set_path}...")
 
-print("Dataset split completed.")
+        for file in file_list:
+            src_path = os.path.join(src_folder, file)
+            dest_path = os.path.join(set_path, file)
+            try:
+                shutil.copy(src_path, dest_path)
+            except Exception as e:
+                print(f"❌ Failed to copy {file}: {e}")
+
+# Create output directories
+os.makedirs(output_dir, exist_ok=True)
+
+# Process both folders
+print("🚀 Splitting images...")
+split_and_copy_images(bw_folder, os.path.join(output_dir, "bw"))
+split_and_copy_images(color_folder, os.path.join(output_dir, "color"))
+
+print("✅ Splitting completed successfully!")
