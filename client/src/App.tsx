@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import MyParticles from './components/Particles';
 import toast from 'react-hot-toast';
 
